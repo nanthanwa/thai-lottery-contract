@@ -31,7 +31,6 @@ module.exports = async function (deployer, network, addresses) {
       const LINKToken = '0x01be23585060835e02b77ef475b0cc51aa1e0709';
       const keyHash = '0x2ed0feb3e7fd2022120aa84fab1945545a9f2ffc9076fd6156fa96eaff4c1311';
       const fee = Web3.utils.toWei('0.1', 'ether'); // 0.1 LINK
-      const fee = Web3.utils.toWei('0.1', 'ether'); // 0.1 LINK
       await deployer.deploy(ThaiLottery, VRFCoordinator, LINKToken, keyHash, fee, { from: admin });
       const thaiLottery = await ThaiLottery.deployed();
       const thaiLotteryAddr = thaiLottery.address;
