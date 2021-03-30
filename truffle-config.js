@@ -18,11 +18,20 @@
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-// const infuraKey = "fj4jll3k.....";
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const Web3 = require('web3');
+const fs = require('fs');
+const { infuraProjectId, privateKey, privateKeyGanache, etherApiKey, bscApiKey } = JSON.parse(fs.readFileSync('.secret').toString().trim());
+
+const kovanProvider = new HDWalletProvider({
+  privateKeys: privateKey,
+  providerOrUrl: `https://kovan.infura.io/v3/${infuraProjectId}`
+});
+
+const binanceProvider = new HDWalletProvider({
+  privateKeys: privateKeyGanache,
+  providerOrUrl: `https://data-seed-prebsc-1-s1.binance.org:8545`
+});
 
 module.exports = {
   /**
@@ -36,17 +45,30 @@ module.exports = {
    */
 
   networks: {
+    kovan: {
+      provider: () => kovanProvider,
+      network_id: '42',
+      gas: 5000000,
+      skipDryRun: true,
+    },
+    binanceTestnet: {
+      provider: () => binanceProvider,
+      network_id: '97',
+      gas: 5500000,
+      gasPrice: Web3.utils.toWei('10', 'gwei'),
+      skipDryRun: true,
+    },
     // Useful for testing. The `development` name is special - truffle uses it by default
     // if it's defined here and no other network is specified at the command line.
     // You should run a client (like ganache-cli, geth or parity) in a separate terminal
     // tab if you use this network and you must also set the `host`, `port` and `network_id`
     // options below to some value.
     //
-    // development: {
-    //  host: "127.0.0.1",     // Localhost (default: none)
-    //  port: 8545,            // Standard Ethereum port (default: none)
-    //  network_id: "*",       // Any network (default: none)
-    // },
+    development: {
+      host: "127.0.0.1",     // Localhost (default: none)
+      port: 8545,            // Standard Ethereum port (default: none)
+      network_id: "*",       // Any network (default: none)
+    },
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
@@ -82,14 +104,14 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      // version: "0.5.1",    // Fetch exact version from solc-bin (default: truffle's version)
-      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+      version: '0.6.12',    // Fetch exact version from solc-bin (default: truffle's version)
+      // docker: true,        // Use '0.5.1' you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {
       //    enabled: false,
       //    runs: 200
       //  },
-      //  evmVersion: "byzantium"
+      //  evmVersion: 'byzantium'
       // }
     }
   },
@@ -102,5 +124,14 @@ module.exports = {
 
   db: {
     enabled: false
+  },
+
+  plugins: [
+    'truffle-plugin-verify'
+  ],
+
+  api_keys: {
+    etherscan: etherApiKey,
+    bscscan: bscApiKey,
   }
 };
