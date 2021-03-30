@@ -28,6 +28,11 @@ const kovanProvider = new HDWalletProvider({
   providerOrUrl: `https://kovan.infura.io/v3/${infuraProjectId}`
 });
 
+const rinkebyProvider = new HDWalletProvider({
+  privateKeys: privateKey,
+  providerOrUrl: `https://rinkeby.infura.io/v3/${infuraProjectId}`
+});
+
 const binanceProvider = new HDWalletProvider({
   privateKeys: privateKeyGanache,
   providerOrUrl: `https://data-seed-prebsc-1-s1.binance.org:8545`
@@ -48,6 +53,12 @@ module.exports = {
     kovan: {
       provider: () => kovanProvider,
       network_id: '42',
+      gas: 5000000,
+      skipDryRun: true,
+    },
+    rinkeby: {
+      provider: () => rinkebyProvider,
+      network_id: '4',
       gas: 5000000,
       skipDryRun: true,
     },
