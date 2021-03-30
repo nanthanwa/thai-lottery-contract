@@ -16,8 +16,10 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     uint256 public issueIndex = 0;
     address public adminAddress;
 
-    // maxNumber
+    // max number
     uint8 public maxNumber = 10;
+    // max quota
+    uint256 maxQuotaOfSameNumber = 50;
 
     bool public drawed = false;
     bool public drawingPhase = false;
@@ -78,6 +80,10 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     function buy(uint8[6] memory _numbers) external validNumber(_numbers) {
         require(!drawed && !drawingPhase, "Drawn or in drawing phase");
         bytes memory numberBytes = numberToBytes(_numbers);
+        require(
+            historyNumberCount[issueIndex][numberBytes] < maxQuotaOfSameNumber,
+            "This number of ticket is exceeded quota."
+        );
         historyNumberCount[issueIndex][numberBytes] = historyNumberCount[
             issueIndex
         ][numberBytes]
@@ -176,6 +182,24 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             return
                 "Drawn, congrats with the winners, the tickets will be available soon.";
         }
+    }
+
+    function getTicketRemainingOfNumber(uint8[6] memory _numbers)
+        external
+        view
+        returns (uint256)
+    {
+        bytes memory numberBytes = numberToBytes(_numbers);
+
+        return
+            maxQuotaOfSameNumber.sub(
+                historyNumberCount[issueIndex][numberBytes]
+            );
+    }
+
+    function setMaxQuotaOfSameNumber(uint256 _newMax) external onlyAdmin {
+        require(_newMax != 0, "Cannot set max quota to zero");
+        maxQuotaOfSameNumber = _newMax;
     }
 
     modifier validNumber(uint8[6] memory _numbers) {
