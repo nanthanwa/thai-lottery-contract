@@ -34,7 +34,7 @@ const rinkebyProvider = new HDWalletProvider({
 });
 
 const binanceProvider = new HDWalletProvider({
-  privateKeys: privateKeyGanache,
+  privateKeys: privateKey,
   providerOrUrl: `https://data-seed-prebsc-1-s1.binance.org:8545`
 });
 
@@ -54,12 +54,14 @@ module.exports = {
       provider: () => kovanProvider,
       network_id: '42',
       gas: 5000000,
+      gasPrice: Web3.utils.toWei('20', 'gwei'),
       skipDryRun: true,
     },
     rinkeby: {
       provider: () => rinkebyProvider,
       network_id: '4',
       gas: 5000000,
+      gasPrice: Web3.utils.toWei('20', 'gwei'),
       skipDryRun: true,
     },
     binanceTestnet: {

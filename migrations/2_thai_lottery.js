@@ -15,17 +15,35 @@ module.exports = async function (deployer, network, addresses) {
       const fee = Web3.utils.toWei('0.1', 'ether'); // 0.1 LINK
       await deployer.deploy(ThaiLottery, VRFCoordinator, LINKToken, keyHash, fee, { from: admin });
       const thaiLottery = await ThaiLottery.deployed();
-      console.log('thaiLottery', thaiLottery.address);
-      const result = await LinkTokenInterface.at('0xa36085F69e2889c224210F603D836748e7dC0088');
-      console.log('result', result);
-      // (thaiLottery.address, Web3.utils.toWei('1', 'ether'));
+      const thaiLotteryAddr = thaiLottery.address;
+      console.log('thaiLotteryAddr', thaiLotteryAddr);
+      const linkContract = await LinkTokenInterface.at('0xa36085F69e2889c224210F603D836748e7dC0088');
+      // console.log('result', result);
+      const adminLinkBalance = await linkContract.balanceOf(admin);
+      console.log('adminLinkBalance', Web3.utils.fromWei(adminLinkBalance, 'ether'));
+      const transferResult = await linkContract.transfer(thaiLotteryAddr, Web3.utils.toWei('1', 'ether'), { from: admin });
+      console.log('transferTx', transferResult.tx);
+      const contractLinkBalance = await linkContract.balanceOf(thaiLotteryAddr);
+      console.log('contractLinkBalance', Web3.utils.fromWei(contractLinkBalance, 'ether'));
     }
     if (network == 'rinkeby') {
       const VRFCoordinator = '0xb3dCcb4Cf7a26f6cf6B120Cf5A73875B7BBc655B';
       const LINKToken = '0x01be23585060835e02b77ef475b0cc51aa1e0709';
       const keyHash = '0x2ed0feb3e7fd2022120aa84fab1945545a9f2ffc9076fd6156fa96eaff4c1311';
       const fee = Web3.utils.toWei('0.1', 'ether'); // 0.1 LINK
+      const fee = Web3.utils.toWei('0.1', 'ether'); // 0.1 LINK
       await deployer.deploy(ThaiLottery, VRFCoordinator, LINKToken, keyHash, fee, { from: admin });
+      const thaiLottery = await ThaiLottery.deployed();
+      const thaiLotteryAddr = thaiLottery.address;
+      console.log('thaiLotteryAddr', thaiLotteryAddr);
+      const linkContract = await LinkTokenInterface.at('0xa36085F69e2889c224210F603D836748e7dC0088');
+      // console.log('result', result);
+      const adminLinkBalance = await linkContract.balanceOf(admin);
+      console.log('adminLinkBalance', Web3.utils.fromWei(adminLinkBalance, 'ether'));
+      const transferResult = await linkContract.transfer(thaiLotteryAddr, Web3.utils.toWei('1', 'ether'), { from: admin });
+      console.log('transferTx', transferResult.tx);
+      const contractLinkBalance = await linkContract.balanceOf(thaiLotteryAddr);
+      console.log('contractLinkBalance', Web3.utils.fromWei(contractLinkBalance, 'ether'));
     }
   } catch (err) {
     console.error(err);
