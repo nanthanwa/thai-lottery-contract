@@ -219,6 +219,11 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         ticketPrice = _newPrice;
     }
 
+    // Update admin address by the previous admin.
+    function setAdmin(address _adminAddress) external onlyAdmin {
+        adminAddress = _adminAddress;
+    }
+
     modifier validNumber(uint8[6] memory _numbers) {
         require(
             _numbers[0] < maxNumber &&
