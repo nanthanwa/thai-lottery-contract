@@ -7,6 +7,8 @@ import "./utils/Utils.sol";
 import "./utils/SafeMath8.sol";
 
 contract ThaiLottery is VRFConsumerBase, Utils {
+    using SafeMath8 for uint8;
+
     bytes32 internal keyHash;
     uint256 internal fee;
 
@@ -18,7 +20,9 @@ contract ThaiLottery is VRFConsumerBase, Utils {
 
     uint8 ticketPrice = 80;
     // Total amount in THB in this round
+    uint256 public ticketCount = 0;
     uint256 public totalAmount = 0;
+    uint256 public totalReward = 0;
 
     // Time stamp of last transaction
     uint256 public lastTimestamp;
@@ -32,9 +36,6 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     bool public drawingPhase = false;
 
     uint8[6] public winningNumbers;
-    uint256 public ticketCount = 0;
-
-    using SafeMath8 for uint8;
 
     // issueIndex => winningNumbers[numbers]
     mapping(uint256 => uint8[6]) public historyNumbers;
@@ -46,6 +47,8 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     mapping(uint256 => uint256) public historyTicketCount;
     // issueIndex => totalAmount
     mapping(uint256 => uint256) public historyTotalAmount;
+    // issueIndex => totalReward
+    mapping(uint256 => uint256) public historyTotalReward;
 
     // Old contructor (Use for deploy on remix)
     // constructor()
@@ -87,8 +90,9 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         winningNumbers[4] = 0;
         winningNumbers[5] = 0;
         ticketCount = 0;
-        issueIndex = issueIndex + 1;
+        issueIndex = issueIndex.add(1);
         totalAmount = 0;
+        totalReward = 0;
         drawed = false;
     }
 
@@ -241,6 +245,77 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     function setAdmin(address _adminAddress) external onlyAdmin {
         adminAddress = _adminAddress;
     }
+
+    function checkWonTicket(uint8[6] memory _numbers)
+        external
+        view
+        returns (bool)
+    {
+        return
+            isWonFirstPrize(_numbers) ||
+            isWonSecondPrize(_numbers) ||
+            isWonThirdPrize(_numbers) ||
+            isWonFourthPrize(_numbers) ||
+            isWonFifthPrize(_numbers) ||
+            isWonThreeDigitPrefix(_numbers) ||
+            isWonThreeDigitSuffix(_numbers) ||
+            isWonTwoDigitSuffix(_numbers) ||
+            isWonFirstPrizeNeighbors(_numbers);
+    }
+
+    function isWonFirstPrize(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonSecondPrize(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonThirdPrize(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonFourthPrize(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonFifthPrize(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonThreeDigitPrefix(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonThreeDigitSuffix(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonTwoDigitSuffix(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
+
+    function isWonFirstPrizeNeighbors(uint8[6] memory _numbers)
+        private
+        view
+        returns (bool)
+    {}
 
     modifier validNumber(uint8[6] memory _numbers) {
         require(
