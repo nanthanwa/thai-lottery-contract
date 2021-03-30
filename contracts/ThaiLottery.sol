@@ -16,6 +16,13 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     uint256 public issueIndex = 0;
     address public adminAddress;
 
+    uint8 ticketPrice = 80;
+    // Total amount in THB in this round
+    uint256 public totalAmount = 0;
+
+    // Time stamp of last transaction
+    uint256 public lastTimestamp;
+
     // max number
     uint8 public maxNumber = 10;
     // max quota
@@ -37,6 +44,8 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     mapping(uint256 => mapping(bytes => uint8)) public historyNumberCount;
     // issueIndex => ticketCount
     mapping(uint256 => uint256) public historyTicketCount;
+    // issueIndex => totalAmount
+    mapping(uint256 => uint256) public historyTotalAmount;
 
     constructor()
         public
@@ -61,6 +70,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         winningNumbers[5] = 0;
         ticketCount = 0;
         issueIndex = issueIndex + 1;
+        totalAmount = 0;
         drawed = false;
     }
 
@@ -90,6 +100,8 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             .addUint8(1);
         ticketCount = ticketCount.add(1);
         historyTicketCount[issueIndex] = ticketCount;
+        totalAmount = totalAmount.add(ticketPrice);
+        historyTotalAmount[issueIndex] = totalAmount;
     }
 
     // --------------------------------------------------
@@ -202,6 +214,11 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         maxQuotaOfSameNumber = _newMax;
     }
 
+    function setTicketPrice(uint8 _newPrice) external onlyAdmin {
+        require(_newPrice != 0, "Cannot set new price to zero");
+        ticketPrice = _newPrice;
+    }
+
     modifier validNumber(uint8[6] memory _numbers) {
         require(
             _numbers[0] < maxNumber &&
@@ -216,7 +233,10 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     }
 
     modifier onlyAdmin() {
-        require(msg.sender == adminAddress, "admin: wut?");
+        require(
+            msg.sender == adminAddress,
+            "Only admin can call this function."
+        );
         _;
     }
 }
