@@ -31,9 +31,13 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     uint8 public maxNumber = 10;
     // max quota
     uint256 maxQuotaOfSameNumber = 50;
+    // currentPrizeIndex
+    uint8 currentPrizeIndex = 0;
 
     bool public drawed = false;
     bool public drawingPhase = false;
+
+    uint8 private totalPrizeIndexs = 9;
 
     uint8 private indexFirstPrize = 0;
     uint8 private indexSecondPrize = 1;
@@ -44,6 +48,16 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     uint8 private indexThreeDigitSuffix = 6;
     uint8 private indexTwoDigitSuffix = 7;
     uint8 private indexFirstPrizeNeighbors = 8;
+
+    bool private isFirstPrizeDrawed;
+    bool private isSecondPrizeDrawed;
+    bool private isThirdPrizeDrawed;
+    bool private isFourthPrizeDrawed;
+    bool private isFifthPrizeDrawed;
+    bool private isThreeDigitPrefixDrawed;
+    bool private isThreeDigitSuffixDrawed;
+    bool private isTwoDigitSuffixDrawed;
+    bool private isFirstPrizeNeighborsDrawed;
 
     uint8 private sizeFirstPrize = 1;
     uint8 private sizeSecondPrize = 5;
@@ -73,34 +87,34 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         public historyWinningNumber;
 
     // Old contructor (Use for deploy on remix)
-    // constructor()
-    //     public
-    //     VRFConsumerBase(
-    //         0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9, // VRF Coordinator
-    //         0xa36085F69e2889c224210F603D836748e7dC0088 // LINK Token
-    //     )
-    // {
-    //     keyHash = 0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4;
-    //     fee = 0.1 * 10**18; // 0.1 LINK
-    //     adminAddress = msg.sender;
-    // }
-
-    constructor(
-        address _vrfCoordinator,
-        address _LINKToken,
-        bytes32 _keyHash,
-        uint256 _fee
-    )
+    constructor()
         public
         VRFConsumerBase(
-            _vrfCoordinator, // VRF Coordinator
-            _LINKToken // LINK Token
+            0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9, // VRF Coordinator
+            0xa36085F69e2889c224210F603D836748e7dC0088 // LINK Token
         )
     {
-        keyHash = _keyHash;
-        fee = _fee;
+        keyHash = 0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4;
+        fee = 0.1 * 10**18; // 0.1 LINK
         adminAddress = msg.sender;
     }
+
+    // constructor(
+    //     address _vrfCoordinator,
+    //     address _LINKToken,
+    //     bytes32 _keyHash,
+    //     uint256 _fee
+    // )
+    //     public
+    //     VRFConsumerBase(
+    //         _vrfCoordinator, // VRF Coordinator
+    //         _LINKToken // LINK Token
+    //     )
+    // {
+    //     keyHash = _keyHash;
+    //     fee = _fee;
+    //     adminAddress = msg.sender;
+    // }
 
     function reset() external onlyAdmin {
         // user can buy on this phase
@@ -115,6 +129,15 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         issueIndex = issueIndex.add(1);
         totalAmount = 0;
         totalReward = 0;
+        isFirstPrizeDrawed = false;
+        isSecondPrizeDrawed = false;
+        isThirdPrizeDrawed = false;
+        isFourthPrizeDrawed = false;
+        isFifthPrizeDrawed = false;
+        isThreeDigitPrefixDrawed = false;
+        isThreeDigitSuffixDrawed = false;
+        isTwoDigitSuffixDrawed = false;
+        isFirstPrizeNeighborsDrawed = false;
         drawed = false;
     }
 
@@ -126,14 +149,50 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     }
 
     function afterDrawing(uint256 randomness) private {
-        uint8[6] memory firstPrizeNumbers =
-            parseWinningNumber(randomness, indexFirstPrize);
+        if (currentPrizeIndex == indexFirstPrize) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            uint8[6] memory firstPrizeNumbers =
+                parseWinningNumber(randomness, indexFirstPrize);
 
-        winningNumbers[indexFirstPrize][0] = firstPrizeNumbers;
+            winningNumbers[indexFirstPrize][0] = firstPrizeNumbers;
 
-        historyWinningNumber[issueIndex][indexFirstPrize][
-            0
-        ] = firstPrizeNumbers;
+            historyWinningNumber[issueIndex][indexFirstPrize][
+                0
+            ] = firstPrizeNumbers;
+            isFirstPrizeDrawed = true;
+        }
+        if (currentPrizeIndex == indexSecondPrize) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isSecondPrizeDrawed = true;
+        }
+        if (currentPrizeIndex == indexThirdPrize) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isThirdPrizeDrawed = true;
+        }
+        if (currentPrizeIndex == indexFourthPrize) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isFourthPrizeDrawed = true;
+        }
+        if (currentPrizeIndex == indexFifthPrize) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isFifthPrizeDrawed = true;
+        }
+        if (currentPrizeIndex == indexThreeDigitPrefix) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isThreeDigitPrefixDrawed = true;
+        }
+        if (currentPrizeIndex == indexThreeDigitSuffix) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isThreeDigitSuffixDrawed = true;
+        }
+        if (currentPrizeIndex == indexTwoDigitSuffix) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isTwoDigitSuffixDrawed = true;
+        }
+        if (currentPrizeIndex == indexFirstPrizeNeighbors) {
+            require(!isFirstPrizeDrawed, "This prize is drawed");
+            isFirstPrizeNeighborsDrawed = true;
+        }
 
         drawed = true;
         drawingPhase = false;
@@ -160,14 +219,19 @@ contract ThaiLottery is VRFConsumerBase, Utils {
 
     // --------------------------------------------------
 
-    function drawing() public onlyAdmin returns (bytes32 requestId) {
+    function drawing(uint8 prizeIndex)
+        public
+        onlyAdmin
+        returns (bytes32 requestId)
+    {
         require(
             LINK.balanceOf(address(this)) > fee,
             "Not enough LINK - fill contract with faucet"
         );
         // user cannot buy on this phase
         require(!drawed && drawingPhase, "Not drawned or in drawing phase");
-
+        require(prizeIndex <= totalPrizeIndexs, "Prize index overflow.");
+        currentPrizeIndex = prizeIndex;
         return requestRandomness(keyHash, fee, lastTimestamp);
     }
 
