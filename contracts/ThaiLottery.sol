@@ -35,10 +35,29 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     bool public drawed = false;
     bool public drawingPhase = false;
 
-    uint8[6] public winningNumbers;
+    uint8 private indexFirstPrize = 0;
+    uint8 private indexSecondPrize = 1;
+    uint8 private indexThirdPrize = 2;
+    uint8 private indexFourthPrize = 3;
+    uint8 private indexFifthPrize = 4;
+    uint8 private indexThreeDigitPrefix = 5;
+    uint8 private indexThreeDigitSuffix = 6;
+    uint8 private indexTwoDigitSuffix = 7;
+    uint8 private indexFirstPrizeNeighbors = 8;
 
-    // issueIndex => winningNumbers[numbers]
-    mapping(uint256 => uint8[6]) public historyNumbers;
+    uint8 private sizeFirstPrize = 1;
+    uint8 private sizeSecondPrize = 5;
+    uint8 private sizeThirdPrize = 10;
+    uint8 private sizeFourthPrize = 50;
+    uint8 private sizeFifthPrize = 100;
+    uint8 private sizeThreeDigitPrefix = 2;
+    uint8 private sizeThreeDigitSuffix = 2;
+    uint8 private sizeTwoDigitSuffix = 1;
+    uint8 private sizeFirstPrizeNeighbors = 2;
+
+    // prize => item => numbers
+    mapping(uint8 => mapping(uint8 => uint8[6])) public winningNumbers;
+
     // issueIndex => [tokenId]
     mapping(uint256 => uint256[]) public lotteryInfo;
     // issueIndex => number[numbers] => count
@@ -49,6 +68,9 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     mapping(uint256 => uint256) public historyTotalAmount;
     // issueIndex => totalReward
     mapping(uint256 => uint256) public historyTotalReward;
+    // issueIndex => prize => item => numbers
+    mapping(uint256 => mapping(uint8 => mapping(uint8 => uint8[6])))
+        public historyWinningNumber;
 
     // Old contructor (Use for deploy on remix)
     // constructor()
@@ -83,12 +105,12 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     function reset() external onlyAdmin {
         // user can buy on this phase
         require(drawed, "Not drawed");
-        winningNumbers[0] = 0;
-        winningNumbers[1] = 0;
-        winningNumbers[2] = 0;
-        winningNumbers[3] = 0;
-        winningNumbers[4] = 0;
-        winningNumbers[5] = 0;
+        winningNumbers[indexFirstPrize][0][0] = 0;
+        winningNumbers[indexFirstPrize][0][1] = 0;
+        winningNumbers[indexFirstPrize][0][2] = 0;
+        winningNumbers[indexFirstPrize][0][3] = 0;
+        winningNumbers[indexFirstPrize][0][4] = 0;
+        winningNumbers[indexFirstPrize][0][5] = 0;
         ticketCount = 0;
         issueIndex = issueIndex.add(1);
         totalAmount = 0;
@@ -100,13 +122,22 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         // user cannot buy on this phase
         require(!drawed && !drawingPhase, "Not drawed or not in drawing phase");
         drawingPhase = true;
+        lastTimestamp = block.timestamp;
     }
 
-    function drawing(uint256 randomness) private {
-        winningNumbers = parseWinningNumber(randomness);
-        historyNumbers[issueIndex] = winningNumbers;
+    function afterDrawing(uint256 randomness) private {
+        uint8[6] memory firstPrizeNumbers =
+            parseWinningNumber(randomness, indexFirstPrize);
+
+        winningNumbers[indexFirstPrize][0] = firstPrizeNumbers;
+
+        historyWinningNumber[issueIndex][indexFirstPrize][
+            0
+        ] = firstPrizeNumbers;
+
         drawed = true;
         drawingPhase = false;
+        lastTimestamp = block.timestamp;
     }
 
     function buy(uint8[6] memory _numbers) external validNumber(_numbers) {
@@ -124,15 +155,12 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         historyTicketCount[issueIndex] = ticketCount;
         totalAmount = totalAmount.add(ticketPrice);
         historyTotalAmount[issueIndex] = totalAmount;
+        lastTimestamp = block.timestamp;
     }
 
     // --------------------------------------------------
 
-    function getRandomNumber(uint256 userProvidedSeed)
-        public
-        onlyAdmin
-        returns (bytes32 requestId)
-    {
+    function drawing() public onlyAdmin returns (bytes32 requestId) {
         require(
             LINK.balanceOf(address(this)) > fee,
             "Not enough LINK - fill contract with faucet"
@@ -140,7 +168,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         // user cannot buy on this phase
         require(!drawed && drawingPhase, "Not drawned or in drawing phase");
 
-        return requestRandomness(keyHash, fee, userProvidedSeed);
+        return requestRandomness(keyHash, fee, lastTimestamp);
     }
 
     function fulfillRandomness(bytes32 requestId, uint256 randomness)
@@ -149,7 +177,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     {
         randomResult = randomness;
         requestIdResult = requestId;
-        drawing(randomness);
+        afterDrawing(randomness);
     }
 
     function withdrawLink() external onlyAdmin {
@@ -159,44 +187,44 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         );
     }
 
-    function parseWinningNumber(uint256 _randomNumber)
+    function parseWinningNumber(uint256 _randomNumber, uint8 prizeIndex)
         internal
-        pure
+        view
         returns (uint8[6] memory)
     {
         uint8[6] memory _winningNumbers;
-        uint8 digit;
+        if (prizeIndex == indexFirstPrize) {
+            uint8 digit;
+            assembly {
+                digit := div(mod(_randomNumber, 1000000), 100000)
+            }
+            _winningNumbers[0] = uint8(digit);
 
-        assembly {
-            digit := div(mod(_randomNumber, 1000000), 100000)
+            assembly {
+                digit := div(mod(_randomNumber, 100000), 10000)
+            }
+            _winningNumbers[1] = uint8(digit);
+
+            assembly {
+                digit := div(mod(_randomNumber, 10000), 1000)
+            }
+            _winningNumbers[2] = uint8(digit);
+
+            assembly {
+                digit := div(mod(_randomNumber, 1000), 100)
+            }
+            _winningNumbers[3] = uint8(digit);
+
+            assembly {
+                digit := div(mod(_randomNumber, 100), 10)
+            }
+            _winningNumbers[4] = uint8(digit);
+
+            assembly {
+                digit := mod(_randomNumber, 10)
+            }
+            _winningNumbers[5] = uint8(digit);
         }
-        _winningNumbers[0] = uint8(digit);
-
-        assembly {
-            digit := div(mod(_randomNumber, 100000), 10000)
-        }
-        _winningNumbers[1] = uint8(digit);
-
-        assembly {
-            digit := div(mod(_randomNumber, 10000), 1000)
-        }
-        _winningNumbers[2] = uint8(digit);
-
-        assembly {
-            digit := div(mod(_randomNumber, 1000), 100)
-        }
-        _winningNumbers[3] = uint8(digit);
-
-        assembly {
-            digit := div(mod(_randomNumber, 100), 10)
-        }
-        _winningNumbers[4] = uint8(digit);
-
-        assembly {
-            digit := mod(_randomNumber, 10)
-        }
-        _winningNumbers[5] = uint8(digit);
-
         return _winningNumbers;
     }
 
@@ -267,7 +295,15 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         private
         view
         returns (bool)
-    {}
+    {
+        return
+            _numbers[0] == winningNumbers[indexFirstPrize][0][0] &&
+            _numbers[1] == winningNumbers[indexFirstPrize][0][1] &&
+            _numbers[2] == winningNumbers[indexFirstPrize][0][2] &&
+            _numbers[3] == winningNumbers[indexFirstPrize][0][3] &&
+            _numbers[4] == winningNumbers[indexFirstPrize][0][4] &&
+            _numbers[5] == winningNumbers[indexFirstPrize][0][5];
+    }
 
     function isWonSecondPrize(uint8[6] memory _numbers)
         private
