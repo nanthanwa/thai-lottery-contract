@@ -49,15 +49,15 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     uint8 private indexTwoDigitSuffix = 7;
     uint8 private indexFirstPrizeNeighbors = 8;
 
-    bool private isFirstPrizeDrawed;
-    bool private isSecondPrizeDrawed;
-    bool private isThirdPrizeDrawed;
-    bool private isFourthPrizeDrawed;
-    bool private isFifthPrizeDrawed;
-    bool private isThreeDigitPrefixDrawed;
-    bool private isThreeDigitSuffixDrawed;
-    bool private isTwoDigitSuffixDrawed;
-    bool private isFirstPrizeNeighborsDrawed; // drawed at the same time when first prize has drawed
+    bool public isFirstPrizeDrawed;
+    bool public isSecondPrizeDrawed;
+    bool public isThirdPrizeDrawed;
+    bool public isFourthPrizeDrawed;
+    bool public isFifthPrizeDrawed;
+    bool public isThreeDigitPrefixDrawed;
+    bool public isThreeDigitSuffixDrawed;
+    bool public isTwoDigitSuffixDrawed;
+    bool public isFirstPrizeNeighborsDrawed; // drawed at the same time when first prize has drawed
 
     uint8 private sizeFirstPrize = 1;
     uint8 private sizeSecondPrize = 5;
@@ -159,12 +159,14 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             // First Prize
             uint8[6] memory firstPrizeNumbers =
                 parseWinningNumber(randomness, indexFirstPrize);
+
             winningNumbers[indexFirstPrize][0] = firstPrizeNumbers;
-            historyWinningNumber[issueIndex][indexFirstPrize][
-                0
-            ] = firstPrizeNumbers;
 
             // First Prize Neighbors
+            winningNumbers[indexFirstPrizeNeighbors][0] = firstPrizeNumbers; // copy the rest value
+            winningNumbers[indexFirstPrizeNeighbors][1] = firstPrizeNumbers; // copy the rest value
+
+            // TODO: handle ending with 0 OR 9
             winningNumbers[indexFirstPrizeNeighbors][0][5] = firstPrizeNumbers[
                 5
             ]
@@ -173,13 +175,6 @@ contract ThaiLottery is VRFConsumerBase, Utils {
                 5
             ]
                 .addUint8(1);
-
-            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
-                0
-            ] = winningNumbers[indexFirstPrizeNeighbors][0];
-            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
-                1
-            ] = winningNumbers[indexFirstPrizeNeighbors][1];
 
             isFirstPrizeDrawed = true;
             isFirstPrizeNeighborsDrawed = true;
@@ -227,6 +222,24 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         lastTimestamp = block.timestamp;
     }
 
+    function saveToHistory() external onlyAdmin {
+        if (currentPrizeIndex == indexFirstPrize) {
+            // first prize
+            historyWinningNumber[issueIndex][indexFirstPrize][
+                0
+            ] = winningNumbers[indexFirstPrize][0];
+
+            // first prize neighbors
+            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
+                0
+            ] = winningNumbers[indexFirstPrizeNeighbors][0];
+
+            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
+                1
+            ] = winningNumbers[indexFirstPrizeNeighbors][1];
+        }
+    }
+
     function buy(uint8[6] memory _numbers) external validNumber(_numbers) {
         require(!allPrizeDrawed && !drawingPhase, "Drawn or in drawing phase");
         bytes memory numberBytes = numberToBytes(_numbers);
@@ -266,12 +279,13 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         return requestRandomness(keyHash, fee, lastTimestamp);
     }
 
+    // @dev this function will be called by Oracle at gas limit 500,000 please save the gas as possible!
     function fulfillRandomness(bytes32 requestId, uint256 randomness)
         internal
         override
     {
-        randomResult = randomness;
         requestIdResult = requestId;
+        randomResult = randomness;
         afterDrawing(randomness);
     }
 
