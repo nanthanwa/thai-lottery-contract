@@ -338,84 +338,87 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         adminAddress = _adminAddress;
     }
 
-    function checkWonTicket(uint8[6] memory _numbers)
+    function checkWonTicket(uint256 _issueIndex, uint8[6] memory _numbers)
         external
         view
         returns (bool)
     {
         return
-            isWonFirstPrize(_numbers) ||
-            isWonSecondPrize(_numbers) ||
-            isWonThirdPrize(_numbers) ||
-            isWonFourthPrize(_numbers) ||
-            isWonFifthPrize(_numbers) ||
-            isWonThreeDigitPrefix(_numbers) ||
-            isWonThreeDigitSuffix(_numbers) ||
-            isWonTwoDigitSuffix(_numbers) ||
-            isWonFirstPrizeNeighbors(_numbers);
+            isWonFirstPrize(_issueIndex, _numbers) ||
+            isWonSecondPrize(_issueIndex, _numbers) ||
+            isWonThirdPrize(_issueIndex, _numbers) ||
+            isWonFourthPrize(_issueIndex, _numbers) ||
+            isWonFifthPrize(_issueIndex, _numbers) ||
+            isWonThreeDigitPrefix(_issueIndex, _numbers) ||
+            isWonThreeDigitSuffix(_issueIndex, _numbers) ||
+            isWonTwoDigitSuffix(_issueIndex, _numbers) ||
+            isWonFirstPrizeNeighbors(_issueIndex, _numbers);
     }
 
-    function isWonFirstPrize(uint8[6] memory _numbers)
-        private
+    function isWonFirstPrize(uint256 _issueIndex, uint8[6] memory _numbers)
+        public
         view
         returns (bool)
     {
         return
-            _numbers[0] == winningNumbers[indexFirstPrize][0][0] &&
-            _numbers[1] == winningNumbers[indexFirstPrize][0][1] &&
-            _numbers[2] == winningNumbers[indexFirstPrize][0][2] &&
-            _numbers[3] == winningNumbers[indexFirstPrize][0][3] &&
-            _numbers[4] == winningNumbers[indexFirstPrize][0][4] &&
-            _numbers[5] == winningNumbers[indexFirstPrize][0][5];
+            _numbers[0] ==
+            historyWinningNumber[_issueIndex][indexFirstPrize][0][0] &&
+            _numbers[1] ==
+            historyWinningNumber[_issueIndex][indexFirstPrize][0][1] &&
+            _numbers[2] ==
+            historyWinningNumber[_issueIndex][indexFirstPrize][0][2] &&
+            _numbers[3] ==
+            historyWinningNumber[_issueIndex][indexFirstPrize][0][3] &&
+            _numbers[4] ==
+            historyWinningNumber[_issueIndex][indexFirstPrize][0][4] &&
+            _numbers[5] ==
+            historyWinningNumber[_issueIndex][indexFirstPrize][0][5];
     }
 
-    function isWonSecondPrize(uint8[6] memory _numbers)
-        private
+    function isWonSecondPrize(uint256 _issueIndex, uint8[6] memory _numbers)
+        public
         view
         returns (bool)
     {}
 
-    function isWonThirdPrize(uint8[6] memory _numbers)
-        private
+    function isWonThirdPrize(uint256 _issueIndex, uint8[6] memory _numbers)
+        public
         view
         returns (bool)
     {}
 
-    function isWonFourthPrize(uint8[6] memory _numbers)
-        private
+    function isWonFourthPrize(uint256 _issueIndex, uint8[6] memory _numbers)
+        public
         view
         returns (bool)
     {}
 
-    function isWonFifthPrize(uint8[6] memory _numbers)
-        private
+    function isWonFifthPrize(uint256 _issueIndex, uint8[6] memory _numbers)
+        public
         view
         returns (bool)
     {}
 
-    function isWonThreeDigitPrefix(uint8[6] memory _numbers)
-        private
+    function isWonThreeDigitPrefix(
+        uint256 _issueIndex,
+        uint8[6] memory _numbers
+    ) public view returns (bool) {}
+
+    function isWonThreeDigitSuffix(
+        uint256 _issueIndex,
+        uint8[6] memory _numbers
+    ) public view returns (bool) {}
+
+    function isWonTwoDigitSuffix(uint256 _issueIndex, uint8[6] memory _numbers)
+        public
         view
         returns (bool)
     {}
 
-    function isWonThreeDigitSuffix(uint8[6] memory _numbers)
-        private
-        view
-        returns (bool)
-    {}
-
-    function isWonTwoDigitSuffix(uint8[6] memory _numbers)
-        private
-        view
-        returns (bool)
-    {}
-
-    function isWonFirstPrizeNeighbors(uint8[6] memory _numbers)
-        private
-        view
-        returns (bool)
-    {}
+    function isWonFirstPrizeNeighbors(
+        uint256 _issueIndex,
+        uint8[6] memory _numbers
+    ) public view returns (bool) {}
 
     modifier validNumber(uint8[6] memory _numbers) {
         require(
