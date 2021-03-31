@@ -503,6 +503,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         view
         returns (bool)
     {
+        // 0
         return
             _numbers[0] ==
             historyWinningNumber[_issueIndex][indexFirstPrize][0][0] &&
@@ -522,41 +523,75 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         public
         view
         returns (bool)
-    {}
+    {
+        // 1
+    }
 
     function isWonThirdPrize(uint256 _issueIndex, uint8[6] memory _numbers)
         public
         view
         returns (bool)
-    {}
+    {
+        // 2
+    }
 
     function isWonFourthPrize(uint256 _issueIndex, uint8[6] memory _numbers)
         public
         view
         returns (bool)
-    {}
+    {
+        // 3
+    }
 
     function isWonFifthPrize(uint256 _issueIndex, uint8[6] memory _numbers)
         public
         view
         returns (bool)
-    {}
+    {
+        // 4
+    }
 
     function isWonThreeDigitPrefix(
         uint256 _issueIndex,
         uint8[6] memory _numbers
-    ) public view returns (bool) {}
+    ) public view returns (bool) {
+        // 5
+        bool isWon = false;
+        for (uint8 index = 0; index < sizeThreeDigitPrefix; index++) {
+            if (
+                _numbers[0] ==
+                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][
+                    index
+                ][3] &&
+                _numbers[1] ==
+                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][
+                    index
+                ][4] &&
+                _numbers[2] ==
+                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][
+                    index
+                ][5]
+            ) {
+                isWon = true;
+                break;
+            }
+        }
+        return isWon;
+    }
 
     function isWonThreeDigitSuffix(
         uint256 _issueIndex,
         uint8[6] memory _numbers
-    ) public view returns (bool) {}
+    ) public view returns (bool) {
+        // 6
+    }
 
     function isWonTwoDigitSuffix(uint256 _issueIndex, uint8[6] memory _numbers)
         public
         view
         returns (bool)
     {
+        // 7
         return
             _numbers[4] ==
             historyWinningNumber[_issueIndex][indexTwoDigitSuffix][0][4] &&
@@ -568,6 +603,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         uint256 _issueIndex,
         uint8[6] memory _numbers
     ) public view returns (bool) {
+        // 8
         bool isWon = false;
         for (uint8 index = 0; index < sizeFirstPrizeNeighbors; index++) {
             if (
