@@ -53,22 +53,22 @@ module.exports = {
     kovan: {
       provider: () => kovanProvider,
       network_id: '42',
-      gas: 5000000,
+      gas: 7000000,
       gasPrice: Web3.utils.toWei('20', 'gwei'),
       skipDryRun: true,
     },
     rinkeby: {
       provider: () => rinkebyProvider,
       network_id: '4',
-      gas: 5000000,
+      gas: 7000000,
       gasPrice: Web3.utils.toWei('20', 'gwei'),
       skipDryRun: true,
     },
     binanceTestnet: {
       provider: () => binanceProvider,
       network_id: '97',
-      gas: 5500000,
-      gasPrice: Web3.utils.toWei('10', 'gwei'),
+      gas: 7000000,
+      gasPrice: Web3.utils.toWei('20', 'gwei'),
       skipDryRun: true,
     },
     // Useful for testing. The `development` name is special - truffle uses it by default
@@ -119,13 +119,13 @@ module.exports = {
     solc: {
       version: '0.6.12',    // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use '0.5.1' you've installed locally with docker (default: false)
-      // settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  },
+      settings: {          // See the solidity docs for advice about optimization and evmVersion
+       optimizer: {
+         enabled: true,
+         runs: 200
+       },
       //  evmVersion: 'byzantium'
-      // }
+      }
     }
   },
 
@@ -140,7 +140,8 @@ module.exports = {
   },
 
   plugins: [
-    'truffle-plugin-verify'
+    'truffle-plugin-verify',
+    'truffle-contract-size',
   ],
 
   api_keys: {

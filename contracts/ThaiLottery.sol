@@ -81,36 +81,37 @@ contract ThaiLottery is VRFConsumerBase, Utils {
 
     // COMMENT THIS FOR PRODUCTION
     // ===================================================
-    constructor()
-        public
-        VRFConsumerBase(
-            0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9, // VRF Coordinator
-            0xa36085F69e2889c224210F603D836748e7dC0088 // LINK Token
-        )
-    {
-        keyHash = 0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4;
-        fee = 0.1 * 10**18; // 0.1 LINK
-        adminAddress = msg.sender;
-    }
+    // constructor()
+    //     public
+    //     VRFConsumerBase(
+    //         0xdD3782915140c8f3b190B5D67eAc6dc5760C46E9, // VRF Coordinator
+    //         0xa36085F69e2889c224210F603D836748e7dC0088 // LINK Token
+    //     )
+    // {
+    //     keyHash = 0x6c3699283bda56ad74f6b855546325b68d482e983852a7a82979cc4807b641f4;
+    //     fee = 0.1 * 10**18; // 0.1 LINK
+    //     adminAddress = msg.sender;
+    // }
     // ===================================================
     // COMMENT THIS FOR DEVELOPMENT
     // ===================================================
-    // constructor(
-    //     address _vrfCoordinator,
-    //     address _LINKToken,
-    //     bytes32 _keyHash,
-    //     uint256 _fee
-    // )
-    //     public
-    //     VRFConsumerBase(
-    //         _vrfCoordinator, // VRF Coordinator
-    //         _LINKToken // LINK Token
-    //     )
-    // {
-    //     keyHash = _keyHash;
-    //     fee = _fee;
-    //     adminAddress = msg.sender;
-    // }
+    constructor(
+        address _vrfCoordinator,
+        address _LINKToken,
+        bytes32 _keyHash,
+        uint256 _fee
+    )
+        public
+        VRFConsumerBase(
+            _vrfCoordinator, // VRF Coordinator
+            _LINKToken // LINK Token
+        )
+    {
+        keyHash = _keyHash;
+        fee = _fee;
+        adminAddress = msg.sender;
+    }
+
     // ===================================================
 
     function reset() external onlyAdmin {
@@ -211,7 +212,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             winningNumbers[indexThreeDigitPrefix][1][3] = threeDigitPrefix[3];
             winningNumbers[indexThreeDigitPrefix][1][4] = threeDigitPrefix[4];
             winningNumbers[indexThreeDigitPrefix][1][5] = threeDigitPrefix[5];
-            
+
             isDrawed[indexThreeDigitPrefix] = true;
         }
         if (currentPrizeIndex == indexThreeDigitSuffix) {
@@ -265,7 +266,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
 
     function saveWinningNumberToHistory() external onlyAdmin {
         require(!isSaveLastedState, "Already save winning numbers to state");
-        if(currentPrizeIndex == indexFirstPrize){
+        if (currentPrizeIndex == indexFirstPrize) {
             // 0
             // first prize
             historyWinningNumber[issueIndex][indexFirstPrize][
@@ -281,19 +282,19 @@ contract ThaiLottery is VRFConsumerBase, Utils {
                 1
             ] = winningNumbers[indexFirstPrizeNeighbors][1];
         }
-        if(currentPrizeIndex == indexSecondPrize){
+        if (currentPrizeIndex == indexSecondPrize) {
             // 1
         }
-        if(currentPrizeIndex == indexThirdPrize){
+        if (currentPrizeIndex == indexThirdPrize) {
             // 2
         }
-        if(currentPrizeIndex == indexFourthPrize){
+        if (currentPrizeIndex == indexFourthPrize) {
             // 3
         }
-        if(currentPrizeIndex == indexFifthPrize){
+        if (currentPrizeIndex == indexFifthPrize) {
             // 4
         }
-        if(currentPrizeIndex == indexThreeDigitPrefix){
+        if (currentPrizeIndex == indexThreeDigitPrefix) {
             // 5
             historyWinningNumber[issueIndex][indexThreeDigitPrefix][
                 0
@@ -303,7 +304,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
                 1
             ] = winningNumbers[indexThreeDigitPrefix][1];
         }
-        if(currentPrizeIndex == indexThreeDigitSuffix){
+        if (currentPrizeIndex == indexThreeDigitSuffix) {
             // 6
             historyWinningNumber[issueIndex][indexThreeDigitSuffix][
                 0
@@ -313,13 +314,13 @@ contract ThaiLottery is VRFConsumerBase, Utils {
                 1
             ] = winningNumbers[indexThreeDigitSuffix][1];
         }
-        if(currentPrizeIndex == indexTwoDigitSuffix){
+        if (currentPrizeIndex == indexTwoDigitSuffix) {
             // 7
             historyWinningNumber[issueIndex][indexTwoDigitSuffix][
                 0
             ] = winningNumbers[indexTwoDigitSuffix][0];
         }
-        if(currentPrizeIndex == indexFirstPrizeNeighbors){
+        if (currentPrizeIndex == indexFirstPrizeNeighbors) {
             // 8
             historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
                 0
@@ -359,12 +360,12 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     {
         // COMMENT THIS FOR DEVELOPMENT
         // ===================================================
-        // require(
-        //     LINK.balanceOf(address(this)) > fee,
-        //     "Not enough LINK - fill contract with faucet"
-        // );
+        require(
+            LINK.balanceOf(address(this)) > fee,
+            "Not enough LINK - fill contract with faucet"
+        );
         // ===================================================
-        
+
         // user cannot buy on this phase
         require(
             !allPrizeDrawed && drawingPhase,
@@ -373,18 +374,18 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         require(prizeIndex < totalPrizeIndexs, "Prize index overflow."); // exclude first prize neighbors
         require(!isDrawed[prizeIndex], "This prize has been drawed");
         require(isSaveLastedState, "Save winning numbers to state first");
-        
+
         // COMMENT THIS FOR PRODUCTION
         // ===================================================
-        currentPrizeIndex = prizeIndex;
-        randomResult = uint256(keccak256(abi.encodePacked(lastTimestamp)));
-        afterDrawing(randomResult);
-        return 0;
+        // currentPrizeIndex = prizeIndex;
+        // randomResult = uint256(keccak256(abi.encodePacked(lastTimestamp)));
+        // afterDrawing(randomResult);
+        // return 0;
         // ===================================================
-        
+
         // COMMENT THIS FOR DEVELOPMENT
         // ===================================================
-        // return requestRandomness(keyHash, fee, lastTimestamp);
+        return requestRandomness(keyHash, fee, lastTimestamp);
         // ===================================================
     }
 
@@ -413,10 +414,10 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         uint8[6] memory _winningNumbers;
         if (
             prizeIndex == indexFirstPrize ||
-        prizeIndex == indexFirstPrizeNeighbors ||
-        prizeIndex == indexThreeDigitPrefix || 
-        prizeIndex == indexThreeDigitSuffix ||
-        prizeIndex == indexTwoDigitSuffix
+            prizeIndex == indexFirstPrizeNeighbors ||
+            prizeIndex == indexThreeDigitPrefix ||
+            prizeIndex == indexThreeDigitSuffix ||
+            prizeIndex == indexTwoDigitSuffix
         ) {
             uint8 digit;
             assembly {
@@ -577,17 +578,17 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         for (uint8 index = 0; index < sizeThreeDigitPrefix; index++) {
             if (
                 _numbers[0] ==
-                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][
-                    index
-                ][3] &&
+                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][index][
+                    3
+                ] &&
                 _numbers[1] ==
-                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][
-                    index
-                ][4] &&
+                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][index][
+                    4
+                ] &&
                 _numbers[2] ==
-                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][
-                    index
-                ][5]
+                historyWinningNumber[_issueIndex][indexThreeDigitPrefix][index][
+                    5
+                ]
             ) {
                 isWon = true;
                 break;
@@ -605,17 +606,17 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         for (uint8 index = 0; index < sizeThreeDigitSuffix; index++) {
             if (
                 _numbers[3] ==
-                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][
-                    index
-                ][3] &&
+                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][index][
+                    3
+                ] &&
                 _numbers[4] ==
-                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][
-                    index
-                ][4] &&
+                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][index][
+                    4
+                ] &&
                 _numbers[5] ==
-                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][
-                    index
-                ][5]
+                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][index][
+                    5
+                ]
             ) {
                 isWon = true;
                 break;
