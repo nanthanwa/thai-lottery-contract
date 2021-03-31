@@ -49,15 +49,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     uint8 private indexTwoDigitSuffix = 7;
     uint8 private indexFirstPrizeNeighbors = 8;
 
-    bool public isFirstPrizeDrawed;
-    bool public isSecondPrizeDrawed;
-    bool public isThirdPrizeDrawed;
-    bool public isFourthPrizeDrawed;
-    bool public isFifthPrizeDrawed;
-    bool public isThreeDigitPrefixDrawed;
-    bool public isThreeDigitSuffixDrawed;
-    bool public isTwoDigitSuffixDrawed;
-    bool public isFirstPrizeNeighborsDrawed; // drawed at the same time when first prize has drawed
+    mapping(uint8 => bool) public isDrawed;
 
     uint8 private sizeFirstPrize = 1;
     uint8 private sizeSecondPrize = 5;
@@ -129,16 +121,16 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         issueIndex = issueIndex.add(1);
         totalAmount = 0;
         totalReward = 0;
-        isFirstPrizeDrawed = false;
-        isSecondPrizeDrawed = false;
-        isThirdPrizeDrawed = false;
-        isFourthPrizeDrawed = false;
-        isFifthPrizeDrawed = false;
-        isThreeDigitPrefixDrawed = false;
-        isThreeDigitSuffixDrawed = false;
-        isTwoDigitSuffixDrawed = false;
-        isFirstPrizeNeighborsDrawed = false;
-        allPrizeDrawed = false;
+
+        isDrawed[indexFirstPrize] = false;
+        isDrawed[indexSecondPrize] = false;
+        isDrawed[indexThirdPrize] = false;
+        isDrawed[indexFourthPrize] = false;
+        isDrawed[indexFifthPrize] = false;
+        isDrawed[indexThreeDigitPrefix] = false;
+        isDrawed[indexThreeDigitSuffix] = false;
+        isDrawed[indexTwoDigitSuffix] = false;
+        isDrawed[indexFirstPrizeNeighbors] = false;
     }
 
     function enterDrawingPhase() external onlyAdmin {
@@ -154,7 +146,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     function afterDrawing(uint256 randomness) private {
         if (currentPrizeIndex == indexFirstPrize) {
             // now first prize AND first prize neighbors are beeing process
-            require(!isFirstPrizeDrawed, "This prize is drawed");
+            require(!isDrawed[indexFirstPrize], "This prize is drawed");
 
             // First Prize
             uint8[6] memory firstPrizeNumbers =
@@ -176,49 +168,51 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             ]
                 .addUint8(1);
 
-            isFirstPrizeDrawed = true;
-            isFirstPrizeNeighborsDrawed = true;
+            isDrawed[indexFirstPrize] = false;
+            isDrawed[indexFirstPrizeNeighbors] = false;
         }
+
         if (currentPrizeIndex == indexSecondPrize) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isSecondPrizeDrawed = true;
+            require(!isDrawed[indexSecondPrize], "This prize is drawed");
+            isDrawed[indexSecondPrize];
         }
         if (currentPrizeIndex == indexThirdPrize) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isThirdPrizeDrawed = true;
+            require(!isDrawed[indexThirdPrize], "This prize is drawed");
+            isDrawed[indexThirdPrize] = true;
         }
         if (currentPrizeIndex == indexFourthPrize) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isFourthPrizeDrawed = true;
+            require(!isDrawed[indexFourthPrize], "This prize is drawed");
+            isDrawed[indexFourthPrize] = true;
         }
         if (currentPrizeIndex == indexFifthPrize) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isFifthPrizeDrawed = true;
+            require(!isDrawed[indexFifthPrize], "This prize is drawed");
+            isDrawed[indexFifthPrize] = true;
         }
         if (currentPrizeIndex == indexThreeDigitPrefix) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isThreeDigitPrefixDrawed = true;
+            require(!isDrawed[indexThreeDigitPrefix], "This prize is drawed");
+            isDrawed[indexThreeDigitPrefix] = true;
         }
         if (currentPrizeIndex == indexThreeDigitSuffix) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isThreeDigitSuffixDrawed = true;
+            require(!isDrawed[indexThreeDigitSuffix], "This prize is drawed");
+            isDrawed[indexThreeDigitSuffix] = true;
         }
         if (currentPrizeIndex == indexTwoDigitSuffix) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isTwoDigitSuffixDrawed = true;
+            require(!isDrawed[indexTwoDigitSuffix], "This prize is drawed");
+            isDrawed[indexTwoDigitSuffix] = true;
         }
 
         allPrizeDrawed =
-            isFirstPrizeDrawed &&
-            isSecondPrizeDrawed &&
-            isThirdPrizeDrawed &&
-            isFourthPrizeDrawed &&
-            isFifthPrizeDrawed &&
-            isThreeDigitPrefixDrawed &&
-            isThreeDigitSuffixDrawed &&
-            isTwoDigitSuffixDrawed;
-        drawingPhase = !allPrizeDrawed;
+            isDrawed[indexFirstPrize] &&
+            isDrawed[indexSecondPrize] &&
+            isDrawed[indexThirdPrize] &&
+            isDrawed[indexFourthPrize] &&
+            isDrawed[indexFifthPrize] &&
+            isDrawed[indexThreeDigitPrefix] &&
+            isDrawed[indexThreeDigitSuffix] &&
+            isDrawed[indexTwoDigitSuffix] &&
+            isDrawed[indexFirstPrizeNeighbors];
 
+        drawingPhase = !allPrizeDrawed;
         lastTimestamp = block.timestamp;
     }
 
@@ -275,6 +269,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             "Not drawned or in drawing phase"
         );
         require(prizeIndex < totalPrizeIndexs, "Prize index overflow."); // exclude first prize neighbors
+
         currentPrizeIndex = prizeIndex;
         return requestRandomness(keyHash, fee, lastTimestamp);
     }
