@@ -34,8 +34,9 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     // currentPrizeIndex
     uint8 currentPrizeIndex = 0;
 
-    bool public allPrizeDrawed = false;
-    bool public drawingPhase = false;
+    bool public allPrizeDrawed;
+    bool public drawingPhase;
+    bool public isSaveLastedState = true; // for first round, no need to save state
 
     uint8 private totalPrizeIndexs = 9;
 
@@ -91,7 +92,6 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         fee = 0.1 * 10**18; // 0.1 LINK
         adminAddress = msg.sender;
     }
-
     // ===================================================
 
     // COMMENT THIS FOR DEVELOPMENT
@@ -117,6 +117,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     function reset() external onlyAdmin {
         // user can buy on this phase
         require(allPrizeDrawed, "Not drawed");
+        require(isSaveLastedState, "Save latest winning number to state first");
         winningNumbers[indexFirstPrize][0][0] = 0;
         winningNumbers[indexFirstPrize][0][1] = 0;
         winningNumbers[indexFirstPrize][0][2] = 0;
@@ -152,7 +153,6 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     function afterDrawing(uint256 randomness) private {
         if (currentPrizeIndex == indexFirstPrize) {
             // now first prize AND first prize neighbors are beeing process
-            require(!isDrawed[indexFirstPrize], "This prize is drawed");
 
             // First Prize
             uint8[6] memory firstPrizeNumbers =
@@ -174,36 +174,29 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             ]
                 .addUint8(1);
 
-            isDrawed[indexFirstPrize] = false;
-            isDrawed[indexFirstPrizeNeighbors] = false;
+            isDrawed[indexFirstPrize] = true;
+            isDrawed[indexFirstPrizeNeighbors] = true;
         }
 
         if (currentPrizeIndex == indexSecondPrize) {
-            require(!isDrawed[indexSecondPrize], "This prize is drawed");
-            isDrawed[indexSecondPrize];
+            isDrawed[indexSecondPrize] = true;
         }
         if (currentPrizeIndex == indexThirdPrize) {
-            require(!isDrawed[indexThirdPrize], "This prize is drawed");
             isDrawed[indexThirdPrize] = true;
         }
         if (currentPrizeIndex == indexFourthPrize) {
-            require(!isDrawed[indexFourthPrize], "This prize is drawed");
             isDrawed[indexFourthPrize] = true;
         }
         if (currentPrizeIndex == indexFifthPrize) {
-            require(!isDrawed[indexFifthPrize], "This prize is drawed");
             isDrawed[indexFifthPrize] = true;
         }
         if (currentPrizeIndex == indexThreeDigitPrefix) {
-            require(!isDrawed[indexThreeDigitPrefix], "This prize is drawed");
             isDrawed[indexThreeDigitPrefix] = true;
         }
         if (currentPrizeIndex == indexThreeDigitSuffix) {
-            require(!isDrawed[indexThreeDigitSuffix], "This prize is drawed");
             isDrawed[indexThreeDigitSuffix] = true;
         }
         if (currentPrizeIndex == indexTwoDigitSuffix) {
-            require(!isDrawed[indexTwoDigitSuffix], "This prize is drawed");
             isDrawed[indexTwoDigitSuffix] = true;
         }
 
@@ -219,10 +212,12 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             isDrawed[indexFirstPrizeNeighbors];
 
         drawingPhase = !allPrizeDrawed;
+        isSaveLastedState = false;
         lastTimestamp = block.timestamp;
     }
 
     function saveToHistory() external onlyAdmin {
+        require(!isSaveLastedState, "Alreay save winning numbers to state");
         if (currentPrizeIndex == indexFirstPrize) {
             // first prize
             historyWinningNumber[issueIndex][indexFirstPrize][
@@ -238,6 +233,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
                 1
             ] = winningNumbers[indexFirstPrizeNeighbors][1];
         }
+        isSaveLastedState = true;
     }
 
     function buy(uint8[6] memory _numbers) external validNumber(_numbers) {
@@ -272,14 +268,16 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         //     "Not enough LINK - fill contract with faucet"
         // );
         // ===================================================
-
+        
         // user cannot buy on this phase
         require(
             !allPrizeDrawed && drawingPhase,
             "Not drawned or in drawing phase"
         );
         require(prizeIndex < totalPrizeIndexs, "Prize index overflow."); // exclude first prize neighbors
-
+        require(!isDrawed[prizeIndex], "This prize has been drawed");
+        require(isSaveLastedState, "Save winning numbers to state first");
+        
         // COMMENT THIS FOR PRODUCTION
         // ===================================================
         currentPrizeIndex = prizeIndex;
@@ -287,7 +285,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         afterDrawing(randomResult);
         return 0;
         // ===================================================
-
+        
         // COMMENT THIS FOR DEVELOPMENT
         // ===================================================
         // return requestRandomness(keyHash, fee, lastTimestamp);
