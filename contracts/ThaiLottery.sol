@@ -34,7 +34,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     // currentPrizeIndex
     uint8 currentPrizeIndex = 0;
 
-    bool public drawed = false;
+    bool public allPrizeDrawed = false;
     bool public drawingPhase = false;
 
     uint8 private totalPrizeIndexs = 9;
@@ -57,7 +57,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     bool private isThreeDigitPrefixDrawed;
     bool private isThreeDigitSuffixDrawed;
     bool private isTwoDigitSuffixDrawed;
-    bool private isFirstPrizeNeighborsDrawed;
+    bool private isFirstPrizeNeighborsDrawed; // drawed at the same time when first prize has drawed
 
     uint8 private sizeFirstPrize = 1;
     uint8 private sizeSecondPrize = 5;
@@ -118,7 +118,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
 
     function reset() external onlyAdmin {
         // user can buy on this phase
-        require(drawed, "Not drawed");
+        require(allPrizeDrawed, "Not drawed");
         winningNumbers[indexFirstPrize][0][0] = 0;
         winningNumbers[indexFirstPrize][0][1] = 0;
         winningNumbers[indexFirstPrize][0][2] = 0;
@@ -138,28 +138,51 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         isThreeDigitSuffixDrawed = false;
         isTwoDigitSuffixDrawed = false;
         isFirstPrizeNeighborsDrawed = false;
-        drawed = false;
+        allPrizeDrawed = false;
     }
 
     function enterDrawingPhase() external onlyAdmin {
         // user cannot buy on this phase
-        require(!drawed && !drawingPhase, "Not drawed or not in drawing phase");
+        require(
+            !allPrizeDrawed && !drawingPhase,
+            "Not drawed or not in drawing phase"
+        );
         drawingPhase = true;
         lastTimestamp = block.timestamp;
     }
 
     function afterDrawing(uint256 randomness) private {
         if (currentPrizeIndex == indexFirstPrize) {
+            // now first prize AND first prize neighbors are beeing process
             require(!isFirstPrizeDrawed, "This prize is drawed");
+
+            // First Prize
             uint8[6] memory firstPrizeNumbers =
                 parseWinningNumber(randomness, indexFirstPrize);
-
             winningNumbers[indexFirstPrize][0] = firstPrizeNumbers;
-
             historyWinningNumber[issueIndex][indexFirstPrize][
                 0
             ] = firstPrizeNumbers;
+
+            // First Prize Neighbors
+            winningNumbers[indexFirstPrizeNeighbors][0][5] = firstPrizeNumbers[
+                5
+            ]
+                .subUint8(1);
+            winningNumbers[indexFirstPrizeNeighbors][1][5] = firstPrizeNumbers[
+                5
+            ]
+                .addUint8(1);
+
+            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
+                0
+            ] = winningNumbers[indexFirstPrizeNeighbors][0];
+            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
+                1
+            ] = winningNumbers[indexFirstPrizeNeighbors][1];
+
             isFirstPrizeDrawed = true;
+            isFirstPrizeNeighborsDrawed = true;
         }
         if (currentPrizeIndex == indexSecondPrize) {
             require(!isFirstPrizeDrawed, "This prize is drawed");
@@ -189,18 +212,23 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             require(!isFirstPrizeDrawed, "This prize is drawed");
             isTwoDigitSuffixDrawed = true;
         }
-        if (currentPrizeIndex == indexFirstPrizeNeighbors) {
-            require(!isFirstPrizeDrawed, "This prize is drawed");
-            isFirstPrizeNeighborsDrawed = true;
-        }
 
-        drawed = true;
-        drawingPhase = false;
+        allPrizeDrawed =
+            isFirstPrizeDrawed &&
+            isSecondPrizeDrawed &&
+            isThirdPrizeDrawed &&
+            isFourthPrizeDrawed &&
+            isFifthPrizeDrawed &&
+            isThreeDigitPrefixDrawed &&
+            isThreeDigitSuffixDrawed &&
+            isTwoDigitSuffixDrawed;
+        drawingPhase = !allPrizeDrawed;
+
         lastTimestamp = block.timestamp;
     }
 
     function buy(uint8[6] memory _numbers) external validNumber(_numbers) {
-        require(!drawed && !drawingPhase, "Drawn or in drawing phase");
+        require(!allPrizeDrawed && !drawingPhase, "Drawn or in drawing phase");
         bytes memory numberBytes = numberToBytes(_numbers);
         require(
             historyNumberCount[issueIndex][numberBytes] < maxQuotaOfSameNumber,
@@ -229,8 +257,11 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             "Not enough LINK - fill contract with faucet"
         );
         // user cannot buy on this phase
-        require(!drawed && drawingPhase, "Not drawned or in drawing phase");
-        require(prizeIndex <= totalPrizeIndexs, "Prize index overflow.");
+        require(
+            !allPrizeDrawed && drawingPhase,
+            "Not drawned or in drawing phase"
+        );
+        require(prizeIndex < totalPrizeIndexs, "Prize index overflow."); // exclude first prize neighbors
         currentPrizeIndex = prizeIndex;
         return requestRandomness(keyHash, fee, lastTimestamp);
     }
@@ -297,14 +328,14 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     }
 
     function getPhaseMessage() external view returns (string memory) {
-        if (!drawed && !drawingPhase) {
+        if (!allPrizeDrawed && !drawingPhase) {
             return "Buying phase, grab the tickets now!";
         }
-        if (!drawed && drawingPhase) {
+        if (!allPrizeDrawed && drawingPhase) {
             return
-                "Prepare for drawing, you cannot buy the ticket at this time.";
+                "Prepare for drawing all prizes, you cannot buy the ticket at this time.";
         }
-        if (drawed) {
+        if (allPrizeDrawed) {
             return
                 "Drawn, congrats with the winners, the tickets will be available soon.";
         }
@@ -413,12 +444,52 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         public
         view
         returns (bool)
-    {}
+    {
+        return
+            _numbers[4] ==
+            historyWinningNumber[_issueIndex][indexTwoDigitSuffix][0][4] &&
+            _numbers[5] ==
+            historyWinningNumber[_issueIndex][indexTwoDigitSuffix][0][5];
+    }
 
     function isWonFirstPrizeNeighbors(
         uint256 _issueIndex,
         uint8[6] memory _numbers
-    ) public view returns (bool) {}
+    ) public view returns (bool) {
+        bool isWon = false;
+        for (uint8 index = 0; index < sizeFirstPrizeNeighbors; index++) {
+            if (
+                _numbers[0] ==
+                historyWinningNumber[_issueIndex][indexFirstPrizeNeighbors][
+                    index
+                ][0] &&
+                _numbers[1] ==
+                historyWinningNumber[_issueIndex][indexFirstPrizeNeighbors][
+                    index
+                ][1] &&
+                _numbers[2] ==
+                historyWinningNumber[_issueIndex][indexFirstPrizeNeighbors][
+                    index
+                ][2] &&
+                _numbers[3] ==
+                historyWinningNumber[_issueIndex][indexFirstPrizeNeighbors][
+                    index
+                ][3] &&
+                _numbers[4] ==
+                historyWinningNumber[_issueIndex][indexFirstPrizeNeighbors][
+                    index
+                ][4] &&
+                _numbers[5] ==
+                historyWinningNumber[_issueIndex][indexFirstPrizeNeighbors][
+                    index
+                ][5]
+            ) {
+                isWon = true;
+                break;
+            }
+        }
+        return isWon;
+    }
 
     modifier validNumber(uint8[6] memory _numbers) {
         require(
