@@ -78,7 +78,8 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     mapping(uint256 => mapping(uint8 => mapping(uint8 => uint8[6])))
         public historyWinningNumber;
 
-    // Old contructor (Use for deploy on remix)
+    // COMMENT THIS FOR PRODUCTION
+    // ===================================================
     constructor()
         public
         VRFConsumerBase(
@@ -91,6 +92,10 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         adminAddress = msg.sender;
     }
 
+    // ===================================================
+
+    // COMMENT THIS FOR DEVELOPMENT
+    // ===================================================
     // constructor(
     //     address _vrfCoordinator,
     //     address _LINKToken,
@@ -107,6 +112,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     //     fee = _fee;
     //     adminAddress = msg.sender;
     // }
+    // ===================================================
 
     function reset() external onlyAdmin {
         // user can buy on this phase
@@ -259,10 +265,14 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         onlyAdmin
         returns (bytes32 requestId)
     {
-        require(
-            LINK.balanceOf(address(this)) > fee,
-            "Not enough LINK - fill contract with faucet"
-        );
+        // COMMENT THIS FOR DEVELOPMENT
+        // ===================================================
+        // require(
+        //     LINK.balanceOf(address(this)) > fee,
+        //     "Not enough LINK - fill contract with faucet"
+        // );
+        // ===================================================
+
         // user cannot buy on this phase
         require(
             !allPrizeDrawed && drawingPhase,
@@ -270,8 +280,18 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         );
         require(prizeIndex < totalPrizeIndexs, "Prize index overflow."); // exclude first prize neighbors
 
+        // COMMENT THIS FOR PRODUCTION
+        // ===================================================
         currentPrizeIndex = prizeIndex;
-        return requestRandomness(keyHash, fee, lastTimestamp);
+        randomResult = uint256(keccak256(abi.encodePacked(lastTimestamp)));
+        afterDrawing(randomResult);
+        return 0;
+        // ===================================================
+
+        // COMMENT THIS FOR DEVELOPMENT
+        // ===================================================
+        // return requestRandomness(keyHash, fee, lastTimestamp);
+        // ===================================================
     }
 
     // @dev this function will be called by Oracle at gas limit 500,000 please save the gas as possible!
