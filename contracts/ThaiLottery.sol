@@ -216,10 +216,34 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         }
         if (currentPrizeIndex == indexThreeDigitSuffix) {
             // 6
+            uint8[6] memory threeDigitSuffix =
+                parseWinningNumber(randomness, indexThreeDigitSuffix);
+
+            winningNumbers[indexThreeDigitPrefix][0][0] = 0;
+            winningNumbers[indexThreeDigitPrefix][0][1] = 0;
+            winningNumbers[indexThreeDigitPrefix][0][2] = 0;
+            winningNumbers[indexThreeDigitPrefix][0][3] = threeDigitSuffix[0];
+            winningNumbers[indexThreeDigitPrefix][0][4] = threeDigitSuffix[1];
+            winningNumbers[indexThreeDigitPrefix][0][5] = threeDigitSuffix[2];
+            winningNumbers[indexThreeDigitPrefix][1][0] = 0;
+            winningNumbers[indexThreeDigitPrefix][1][1] = 0;
+            winningNumbers[indexThreeDigitPrefix][1][2] = 0;
+            winningNumbers[indexThreeDigitPrefix][1][3] = threeDigitSuffix[3];
+            winningNumbers[indexThreeDigitPrefix][1][4] = threeDigitSuffix[4];
+            winningNumbers[indexThreeDigitPrefix][1][5] = threeDigitSuffix[5];
             isDrawed[indexThreeDigitSuffix] = true;
         }
         if (currentPrizeIndex == indexTwoDigitSuffix) {
             // 7
+            uint8[6] memory twoDigitSubfix =
+                parseWinningNumber(randomness, indexTwoDigitSuffix);
+
+            winningNumbers[indexTwoDigitSuffix][0][0] = 0;
+            winningNumbers[indexTwoDigitSuffix][0][1] = 0;
+            winningNumbers[indexTwoDigitSuffix][0][2] = 0;
+            winningNumbers[indexTwoDigitSuffix][0][3] = 0;
+            winningNumbers[indexTwoDigitSuffix][0][4] = twoDigitSubfix[4];
+            winningNumbers[indexTwoDigitSuffix][0][5] = twoDigitSubfix[5];
             isDrawed[indexTwoDigitSuffix] = true;
         }
 
@@ -242,6 +266,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
     function saveWinningNumberToHistory() external onlyAdmin {
         require(!isSaveLastedState, "Already save winning numbers to state");
         if(currentPrizeIndex == indexFirstPrize){
+            // 0
             // first prize
             historyWinningNumber[issueIndex][indexFirstPrize][
                 0
@@ -257,18 +282,19 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             ] = winningNumbers[indexFirstPrizeNeighbors][1];
         }
         if(currentPrizeIndex == indexSecondPrize){
-        
+            // 1
         }
         if(currentPrizeIndex == indexThirdPrize){
-        
+            // 2
         }
         if(currentPrizeIndex == indexFourthPrize){
-        
+            // 3
         }
         if(currentPrizeIndex == indexFifthPrize){
-        
+            // 4
         }
         if(currentPrizeIndex == indexThreeDigitPrefix){
+            // 5
             historyWinningNumber[issueIndex][indexThreeDigitPrefix][
                 0
             ] = winningNumbers[indexThreeDigitPrefix][0];
@@ -278,13 +304,30 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             ] = winningNumbers[indexThreeDigitPrefix][1];
         }
         if(currentPrizeIndex == indexThreeDigitSuffix){
-        
+            // 6
+            historyWinningNumber[issueIndex][indexThreeDigitSuffix][
+                0
+            ] = winningNumbers[indexThreeDigitSuffix][0];
+
+            historyWinningNumber[issueIndex][indexThreeDigitSuffix][
+                1
+            ] = winningNumbers[indexThreeDigitSuffix][1];
         }
         if(currentPrizeIndex == indexTwoDigitSuffix){
-        
+            // 7
+            historyWinningNumber[issueIndex][indexTwoDigitSuffix][
+                0
+            ] = winningNumbers[indexTwoDigitSuffix][0];
         }
         if(currentPrizeIndex == indexFirstPrizeNeighbors){
-        
+            // 8
+            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
+                0
+            ] = winningNumbers[indexFirstPrizeNeighbors][0];
+
+            historyWinningNumber[issueIndex][indexFirstPrizeNeighbors][
+                1
+            ] = winningNumbers[indexFirstPrizeNeighbors][1];
         }
         isSaveLastedState = true;
     }
@@ -368,39 +411,13 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         returns (uint8[6] memory)
     {
         uint8[6] memory _winningNumbers;
-        if (prizeIndex == indexFirstPrize) {
-            uint8 digit;
-            assembly {
-                digit := div(mod(_randomNumber, 1000000), 100000)
-            }
-            _winningNumbers[0] = uint8(digit);
-
-            assembly {
-                digit := div(mod(_randomNumber, 100000), 10000)
-            }
-            _winningNumbers[1] = uint8(digit);
-
-            assembly {
-                digit := div(mod(_randomNumber, 10000), 1000)
-            }
-            _winningNumbers[2] = uint8(digit);
-
-            assembly {
-                digit := div(mod(_randomNumber, 1000), 100)
-            }
-            _winningNumbers[3] = uint8(digit);
-
-            assembly {
-                digit := div(mod(_randomNumber, 100), 10)
-            }
-            _winningNumbers[4] = uint8(digit);
-
-            assembly {
-                digit := mod(_randomNumber, 10)
-            }
-            _winningNumbers[5] = uint8(digit);
-        }
-        if (prizeIndex == indexThreeDigitPrefix) {
+        if (
+            prizeIndex == indexFirstPrize ||
+        prizeIndex == indexFirstPrizeNeighbors ||
+        prizeIndex == indexThreeDigitPrefix || 
+        prizeIndex == indexThreeDigitSuffix ||
+        prizeIndex == indexTwoDigitSuffix
+        ) {
             uint8 digit;
             assembly {
                 digit := div(mod(_randomNumber, 1000000), 100000)
@@ -584,6 +601,27 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         uint8[6] memory _numbers
     ) public view returns (bool) {
         // 6
+        bool isWon = false;
+        for (uint8 index = 0; index < sizeThreeDigitSuffix; index++) {
+            if (
+                _numbers[3] ==
+                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][
+                    index
+                ][3] &&
+                _numbers[4] ==
+                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][
+                    index
+                ][4] &&
+                _numbers[5] ==
+                historyWinningNumber[_issueIndex][indexThreeDigitSuffix][
+                    index
+                ][5]
+            ) {
+                isWon = true;
+                break;
+            }
+        }
+        return isWon;
     }
 
     function isWonTwoDigitSuffix(uint256 _issueIndex, uint8[6] memory _numbers)
