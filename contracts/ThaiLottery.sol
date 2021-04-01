@@ -464,7 +464,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         }
         if (!allPrizeDrawed && drawingPhase) {
             return
-                "Prepare for drawing all prizes, you cannot buy the ticket at this time.";
+                "Prepare for drawing, you cannot buy the ticket at this time.";
         }
         if (allPrizeDrawed) {
             return
