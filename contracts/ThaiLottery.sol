@@ -118,12 +118,13 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         // user can buy on this phase
         require(allPrizeDrawed, "Not drawed");
         require(isSaveLastedState, "Save latest winning number to state first");
-        winningNumbers[indexFirstPrize][0][0] = 0;
-        winningNumbers[indexFirstPrize][0][1] = 0;
-        winningNumbers[indexFirstPrize][0][2] = 0;
-        winningNumbers[indexFirstPrize][0][3] = 0;
-        winningNumbers[indexFirstPrize][0][4] = 0;
-        winningNumbers[indexFirstPrize][0][5] = 0;
+        winningNumbers[indexFirstPrize][0] = [0, 0, 0, 0, 0, 0];
+        winningNumbers[indexThreeDigitPrefix][0] = [0, 0, 0, 0, 0, 0];
+        winningNumbers[indexThreeDigitPrefix][1] = [0, 0, 0, 0, 0, 0];
+        winningNumbers[indexThreeDigitSuffix][0] = [0, 0, 0, 0, 0, 0];
+        winningNumbers[indexThreeDigitSuffix][1] = [0, 0, 0, 0, 0, 0];
+        winningNumbers[indexTwoDigitSuffix][0] = [0, 0, 0, 0, 0, 0];
+        winningNumbers[indexFirstPrizeNeighbors][0] = [0, 0, 0, 0, 0, 0];
         ticketCount = 0;
         issueIndex = issueIndex.add(1);
         totalAmount = 0;
@@ -220,18 +221,18 @@ contract ThaiLottery is VRFConsumerBase, Utils {
             uint8[6] memory threeDigitSuffix =
                 parseWinningNumber(randomness, indexThreeDigitSuffix);
 
-            winningNumbers[indexThreeDigitPrefix][0][0] = 0;
-            winningNumbers[indexThreeDigitPrefix][0][1] = 0;
-            winningNumbers[indexThreeDigitPrefix][0][2] = 0;
-            winningNumbers[indexThreeDigitPrefix][0][3] = threeDigitSuffix[0];
-            winningNumbers[indexThreeDigitPrefix][0][4] = threeDigitSuffix[1];
-            winningNumbers[indexThreeDigitPrefix][0][5] = threeDigitSuffix[2];
-            winningNumbers[indexThreeDigitPrefix][1][0] = 0;
-            winningNumbers[indexThreeDigitPrefix][1][1] = 0;
-            winningNumbers[indexThreeDigitPrefix][1][2] = 0;
-            winningNumbers[indexThreeDigitPrefix][1][3] = threeDigitSuffix[3];
-            winningNumbers[indexThreeDigitPrefix][1][4] = threeDigitSuffix[4];
-            winningNumbers[indexThreeDigitPrefix][1][5] = threeDigitSuffix[5];
+            winningNumbers[indexThreeDigitSuffix][0][0] = 0;
+            winningNumbers[indexThreeDigitSuffix][0][1] = 0;
+            winningNumbers[indexThreeDigitSuffix][0][2] = 0;
+            winningNumbers[indexThreeDigitSuffix][0][3] = threeDigitSuffix[0];
+            winningNumbers[indexThreeDigitSuffix][0][4] = threeDigitSuffix[1];
+            winningNumbers[indexThreeDigitSuffix][0][5] = threeDigitSuffix[2];
+            winningNumbers[indexThreeDigitSuffix][1][0] = 0;
+            winningNumbers[indexThreeDigitSuffix][1][1] = 0;
+            winningNumbers[indexThreeDigitSuffix][1][2] = 0;
+            winningNumbers[indexThreeDigitSuffix][1][3] = threeDigitSuffix[3];
+            winningNumbers[indexThreeDigitSuffix][1][4] = threeDigitSuffix[4];
+            winningNumbers[indexThreeDigitSuffix][1][5] = threeDigitSuffix[5];
             isDrawed[indexThreeDigitSuffix] = true;
         }
         if (currentPrizeIndex == indexTwoDigitSuffix) {
@@ -282,6 +283,8 @@ contract ThaiLottery is VRFConsumerBase, Utils {
                 1
             ] = winningNumbers[indexFirstPrizeNeighbors][1];
         }
+
+        // TODO: fill this!
         if (currentPrizeIndex == indexSecondPrize) {
             // 1
         }
