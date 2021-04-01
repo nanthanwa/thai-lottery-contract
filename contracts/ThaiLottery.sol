@@ -375,9 +375,10 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         require(!isDrawed[prizeIndex], "This prize has been drawed");
         require(isSaveLastedState, "Save winning numbers to state first");
 
+        currentPrizeIndex = prizeIndex;
+
         // COMMENT THIS FOR PRODUCTION
         // ===================================================
-        // currentPrizeIndex = prizeIndex;
         // randomResult = uint256(keccak256(abi.encodePacked(lastTimestamp)));
         // afterDrawing(randomResult);
         // return 0;
