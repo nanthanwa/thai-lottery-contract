@@ -9,6 +9,8 @@ import "./utils/SafeMath8.sol";
 contract ThaiLottery is VRFConsumerBase, Utils {
     using SafeMath8 for uint8;
 
+    event Drawed(uint256, uint8);
+
     bytes32 internal keyHash;
     uint256 internal fee;
 
@@ -263,6 +265,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         drawingPhase = !allPrizeDrawed;
         isSaveLastedState = false;
         lastTimestamp = block.timestamp;
+        emit Drawed(issueIndex, currentPrizeIndex);
     }
 
     function saveWinningNumberToHistory() external onlyAdmin {
