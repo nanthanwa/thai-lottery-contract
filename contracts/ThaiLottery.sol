@@ -142,6 +142,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         isDrawed[indexThreeDigitSuffix] = false;
         isDrawed[indexTwoDigitSuffix] = false;
         isDrawed[indexFirstPrizeNeighbors] = false;
+        allPrizeDrawed = false;
     }
 
     function enterDrawingPhase() external onlyAdmin {
