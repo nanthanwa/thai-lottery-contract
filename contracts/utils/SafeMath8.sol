@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.6.12;
+pragma solidity 0.6.12;
 
 library SafeMath8 {
     function mulUint8(uint8 a, uint8 b) internal pure returns (uint8) {
