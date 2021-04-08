@@ -127,6 +127,7 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         winningNumbers[indexThreeDigitSuffix][1] = [0, 0, 0, 0, 0, 0];
         winningNumbers[indexTwoDigitSuffix][0] = [0, 0, 0, 0, 0, 0];
         winningNumbers[indexFirstPrizeNeighbors][0] = [0, 0, 0, 0, 0, 0];
+        winningNumbers[indexFirstPrizeNeighbors][1] = [0, 0, 0, 0, 0, 0];
         ticketCount = 0;
         issueIndex = issueIndex.add(1);
         totalAmount = 0;
