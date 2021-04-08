@@ -1,0 +1,939 @@
+{
+	"compiler": {
+		"version": "0.6.12+commit.27d51765"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"name": "Drawed",
+				"type": "event"
+			},
+			{
+				"inputs": [],
+				"name": "adminAddress",
+				"outputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "allPrizeDrawed",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "buy",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes",
+						"name": "_numbers",
+						"type": "bytes"
+					}
+				],
+				"name": "bytesToNumber",
+				"outputs": [
+					{
+						"internalType": "uint8[6]",
+						"name": "",
+						"type": "uint8[6]"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "checkWonTicket",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8",
+						"name": "prizeIndex",
+						"type": "uint8"
+					}
+				],
+				"name": "drawing",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "requestId",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "drawingPhase",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "enterDrawingPhase",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_number",
+						"type": "uint256"
+					}
+				],
+				"name": "getKeccak256",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_number",
+						"type": "uint256"
+					}
+				],
+				"name": "getKeccak256Byte",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getLinkBalance",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "getPhaseMessage",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "getTicketRemainingOfNumber",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "",
+						"type": "bytes"
+					}
+				],
+				"name": "historyNumberCount",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "historyTicketCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "historyTotalAmount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "historyTotalReward",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "historyWinningNumber",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"name": "isDrawed",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "isSaveLastedState",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonFifthPrize",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonFirstPrize",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonFirstPrizeNeighbors",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonFourthPrize",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonSecondPrize",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonThirdPrize",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonThreeDigitPrefix",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonThreeDigitSuffix",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_issueIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "isWonTwoDigitSuffix",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "issueIndex",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "lastTimestamp",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "lotteryInfo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "maxNumber",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8[6]",
+						"name": "_numbers",
+						"type": "uint8[6]"
+					}
+				],
+				"name": "numberToBytes",
+				"outputs": [
+					{
+						"internalType": "bytes",
+						"name": "",
+						"type": "bytes"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "randomResult",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "bytes32",
+						"name": "requestId",
+						"type": "bytes32"
+					},
+					{
+						"internalType": "uint256",
+						"name": "randomness",
+						"type": "uint256"
+					}
+				],
+				"name": "rawFulfillRandomness",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "requestIdResult",
+				"outputs": [
+					{
+						"internalType": "bytes32",
+						"name": "",
+						"type": "bytes32"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "reset",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "saveWinningNumberToHistory",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_adminAddress",
+						"type": "address"
+					}
+				],
+				"name": "setAdmin",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "_newMax",
+						"type": "uint256"
+					}
+				],
+				"name": "setMaxQuotaOfSameNumber",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8",
+						"name": "_newPrice",
+						"type": "uint8"
+					}
+				],
+				"name": "setTicketPrice",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "ticketCount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalAmount",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "totalReward",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "winningNumbers",
+				"outputs": [
+					{
+						"internalType": "uint8",
+						"name": "",
+						"type": "uint8"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "withdrawLink",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/ThaiLottery.sol": "ThaiLottery"
+		},
+		"evmVersion": "istanbul",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": true,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"contracts/ThaiLottery.sol": {
+			"keccak256": "0xb31b8995e6c76b637b97fa11f350912b4cf4872bc428536a186c82f7abf9fedc",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ba5398b731c9beca3ff4a999bde882930347d93db676f3b8a6a1ab7ffd6184ff",
+				"dweb:/ipfs/QmPQQ65UZuSJjoDha7Np5hJFM2csAMSK81PdL1cit4t3uf"
+			]
+		},
+		"contracts/VRFConsumerBase.sol": {
+			"keccak256": "0x6e562ca2d8b11a1cfd2c9c02fd3405bb4587a7f137141eca4bb4ec61c432c1d4",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://ecc6c1b633e70fe6d7e11dc1b8d35f8d898cd8e692b7fe1d06142ff5ec863f56",
+				"dweb:/ipfs/QmR7eFso4Hvow7wCW4sUuazZJnX1tacS21WtHWuaUMehAx"
+			]
+		},
+		"contracts/VRFRequestIDBase.sol": {
+			"keccak256": "0xca14b06ca03a5568965d0112bdffab1a58f382301193b784db926b4536953680",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://547da1d28dbc16f656fd78595aecb541c1a130a387ef5969e7b740bd5c5c2476",
+				"dweb:/ipfs/QmNy4Dfuy1AYVPBhxe49PL4JofQSv9UbD76n189ooAhUZd"
+			]
+		},
+		"contracts/interfaces/LinkTokenInterface.sol": {
+			"keccak256": "0x31e29230384fe8684ffe4c30a505eba6b6b50a3e4dd84ef40c430d6bed41742a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://a6fbb65b022f9d96d84ec58602f56a02f23c67fc4ee0f68d3c0f936a4e9d3a25",
+				"dweb:/ipfs/QmRWjtsy3cqPi79T4XdRoDBwFTm4mem9au1x6AaEov4M96"
+			]
+		},
+		"contracts/utils/SafeMath8.sol": {
+			"keccak256": "0x27526acf251a10d46e861ab53a009fcebc9b2bd06671c26d8001083b5b5b2e3b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9fcbfa5a3f1741dde7bca9be557dcb79e3067c9cca5f942b867670b3b4c69b54",
+				"dweb:/ipfs/QmZa3NonYaxvGSsyFcjT2YgR3VuJXXhCKK8e5vhPWAi1sv"
+			]
+		},
+		"contracts/utils/Utils.sol": {
+			"keccak256": "0x7c31707360c0be30711b91d9a465b14533412feadb7e8edc25aeca388e010b61",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://42e0b5de26dd0a3810c454f73ece6b59d2ce04a99226e7ec9f8ba6cf17082265",
+				"dweb:/ipfs/QmeqNLpP66DpaLohzJPDja4KaXjrXcnKRB9QZGj3BS1UCF"
+			]
+		},
+		"contracts/vendor/SafeMathChainlink.sol": {
+			"keccak256": "0x06b8b9d371508c450e0e6693026721d01eef0f0420f865e4464f05d27e62a8a6",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://17d54b05842562aa8767b8dd3bf21a71f9337c11172b289a709f679dfd475800",
+				"dweb:/ipfs/QmQuysPhzUZHAUnWhz3FhNVk3MAeEzLq3pV68de3zWkc7S"
+			]
+		}
+	},
+	"version": 1
+}

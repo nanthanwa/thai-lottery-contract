@@ -687,6 +687,14 @@ contract ThaiLottery is VRFConsumerBase, Utils {
         return isWon;
     }
 
+    function getKeccak256(uint256 _number) external pure returns (uint256) {
+        return uint256(keccak256(abi.encodePacked(_number)));
+    }
+
+    function getKeccak256Byte(uint256 _number) external pure returns (bytes32) {
+        return keccak256(abi.encodePacked(_number));
+    }
+
     modifier validNumber(uint8[6] memory _numbers) {
         require(
             _numbers[0] < maxNumber &&
